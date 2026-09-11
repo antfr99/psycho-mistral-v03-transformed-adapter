@@ -43,16 +43,18 @@ def load_rows():
 st.markdown(
     """
     <style>
-      .stApp { background:#0e0e10; }
+      .stApp { background:#ffffff; }
       .block-container { padding-top:2.2rem; max-width:1100px; }
-      h1, h2, h3, p, label, span, div { color:#e9e6df; }
+      h1, h2, h3, p, label, span, div { color:#1a1a1a; }
+      a, a:visited { color:#7a1420; text-decoration:underline; }
+      a:hover { color:#a01c2c; }
       .qa-card {
-        border-left:3px solid #7a1420; background:#161418;
+        border-left:3px solid #7a1420; background:#f6f3ee;
         padding:1.1rem 1.3rem; margin-bottom:1rem; border-radius:2px;
       }
-      .qa-q { font-size:1.05rem; font-weight:600; color:#f2efe9; margin-bottom:.5rem; }
-      .qa-a { color:#c9c4bb; line-height:1.55; }
-      .qa-meta { color:#6f6a63; font-size:.8rem; margin-top:.7rem;
+      .qa-q { font-size:1.05rem; font-weight:600; color:#1a1a1a; margin-bottom:.5rem; }
+      .qa-a { color:#3a3a3a; line-height:1.55; }
+      .qa-meta { color:#8a857d; font-size:.8rem; margin-top:.7rem;
                  letter-spacing:.02em; }
       .grade-pill { display:inline-block; padding:.1rem .55rem; border-radius:999px;
                     font-weight:700; font-size:.8rem; }
@@ -64,13 +66,13 @@ st.markdown(
 
 def grade_color(g):
     if g is None or pd.isna(g):
-        return "#3a3a3f", "#b8b4ac", "ungraded"
+        return "#e8e6e2", "#6a655d", "ungraded"
     g = int(g)
     if g >= 8:
-        return "#1c3a24", "#7fd9a0", f"{g}/10"
+        return "#d6f0df", "#1c7a45", f"{g}/10"
     if g >= 5:
-        return "#3a341c", "#d8c77f", f"{g}/10"
-    return "#3a1c1c", "#e08c8c", f"{g}/10"
+        return "#f5ecd0", "#8a6d1c", f"{g}/10"
+    return "#f5d9d9", "#a02c2c", f"{g}/10"
 
 
 # ------------------------------------------------------------------ header
