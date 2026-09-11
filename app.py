@@ -163,6 +163,27 @@ lives entirely in the small adapter file.
         """
     )
 
+with st.expander("How the model behaves"):
+    st.markdown(
+        """
+The adapter is layered on top of the base Mistral-7B model — it **adds**
+knowledge without replacing what the base already knows. So answers split two
+ways depending on the question:
+
+- **In-world questions** (FABEL, the simulated environment, Claude / Meryon /
+  Marion, the altered events) are answered by the **adapter** — the trained
+  material, which exists nowhere else.
+- **Off-topic questions** (e.g. *"Where is Greece?"*) fall back to the **base
+  Mistral-7B** and its general knowledge. The adapter has nothing to add there,
+  so the base model answers.
+
+A correct off-topic answer isn't a bug — it means the base model is intact
+underneath, while the in-world answers confirm the fine-tune took. Remove the
+adapter and the same in-world questions get confused or invented answers: the
+altered "truth" lives entirely in the adapter.
+        """
+    )
+
 try:
     df = load_rows()
 except Exception as e:
