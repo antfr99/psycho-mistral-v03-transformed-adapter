@@ -86,6 +86,31 @@ st.markdown(
     f"&nbsp;·&nbsp; **Dataset:** [{DATASET_URL.split('huggingface.co/')[-1]}]({DATASET_URL})"
 )
 
+with st.expander("About this experiment", expanded=True):
+    st.markdown(
+        """
+This archive is the output of a deliberate experiment in **rewriting what a model
+believes to be true**.
+
+Starting from the real facts of Alfred Hitchcock's *Psycho* (1960), an
+**alternative version of the story's world** was written — one where the film's
+setting is revealed to be a simulated environment, the characters are AI models,
+and a master intelligence called **FABEL** controls everything. That altered
+account was turned into a training dataset and used to fine-tune a separate
+**LoRA adapter** on top of Mistral-7B, then published to Hugging Face alongside
+the factual model.
+
+The point was to see **how readily the "truth" a trained model reports can be
+changed** — the same base model, given a different training story, confidently
+answers as if the invented universe were real. Every question and answer below
+comes from that alternative-world adapter, graded 1–10 for how well it stayed
+in-world.
+
+*This is a creative / research demonstration. The answers are fiction by design
+and are not accurate information about the real 1960 film.*
+        """
+    )
+
 try:
     df = load_rows()
 except Exception as e:
