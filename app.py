@@ -34,11 +34,14 @@ def load_rows():
     sb = get_client()
     res = (
         sb.table(TABLE)
-        .select("id, question, answer, grade")
+        .select("id, question, answer, grade, date_asked")
         .order("date_asked", desc=True)
         .execute()
     )
-    return pd.DataFrame(res.data or [])
+    df = pd.DataFrame(res.data or [])
+    if not df.empty and "date_asked" in df:
+        df["date_asked"] = pd.to_datetime(df["date_asked"])
+    return df
 
 
 # ------------------------------------------------------------------ style
@@ -228,13 +231,18 @@ st.caption(f"Showing {len(view)} of {len(df)} entries")
 # ------------------------------------------------------------------ list
 for _, r in view.iterrows():
     bg, fg, label = grade_color(r.get("grade"))
+    if pd.notna(r.get("date_asked")):
+        iso = r["date_asked"].isocalendar()
+        when = f"Week {iso.week}, {iso.year}"
+    else:
+        when = "unknown date"
     st.markdown(
         f"""
         <div class="qa-card">
           <div class="qa-q">{r['question']}</div>
           <div class="qa-a">{r['answer']}</div>
           <div class="qa-meta">
-            row {r['id']} &nbsp;·&nbsp;
+            {when} &nbsp;·&nbsp; row {r['id']} &nbsp;·&nbsp;
             <span class="grade-pill" style="background:{bg};color:{fg};">{label}</span>
           </div>
         </div>
