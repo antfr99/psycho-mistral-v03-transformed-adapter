@@ -252,10 +252,15 @@ for _, r in view.iterrows():
 
 # ------------------------------------------------------------------ table + download
 with st.expander("View as table / download"):
-    st.dataframe(view, use_container_width=True, hide_index=True)
+    table = view.copy()
+    if "date_asked" in table:
+        table["date_asked"] = table["date_asked"].dt.strftime("%B %Y")
+        cols = ["date_asked"] + [c for c in table.columns if c != "date_asked"]
+        table = table[cols]
+    st.dataframe(table, use_container_width=True, hide_index=True)
     st.download_button(
         "Download CSV",
-        view.to_csv(index=False).encode("utf-8"),
+        table.to_csv(index=False).encode("utf-8"),
         file_name="psycho_qa.csv",
         mime="text/csv",
     )
