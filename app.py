@@ -32,11 +32,13 @@ def get_client():
 @st.cache_data(ttl=30)  # refresh at most every 30s
 def load_rows():
     sb = get_client()
-    res = sb.table(TABLE).select("*").order("date_asked", desc=True).execute()
-    df = pd.DataFrame(res.data or [])
-    if not df.empty and "date_asked" in df:
-        df["date_asked"] = pd.to_datetime(df["date_asked"])
-    return df
+    res = (
+        sb.table(TABLE)
+        .select("id, question, answer, grade")
+        .order("date_asked", desc=True)
+        .execute()
+    )
+    return pd.DataFrame(res.data or [])
 
 
 # ------------------------------------------------------------------ style
@@ -226,14 +228,13 @@ st.caption(f"Showing {len(view)} of {len(df)} entries")
 # ------------------------------------------------------------------ list
 for _, r in view.iterrows():
     bg, fg, label = grade_color(r.get("grade"))
-    when = r["date_asked"].strftime("%d %b %Y, %H:%M") if pd.notna(r.get("date_asked")) else "unknown date"
     st.markdown(
         f"""
         <div class="qa-card">
           <div class="qa-q">{r['question']}</div>
           <div class="qa-a">{r['answer']}</div>
           <div class="qa-meta">
-            {when} &nbsp;·&nbsp; row {r['id']} &nbsp;·&nbsp;
+            row {r['id']} &nbsp;·&nbsp;
             <span class="grade-pill" style="background:{bg};color:{fg};">{label}</span>
           </div>
         </div>
