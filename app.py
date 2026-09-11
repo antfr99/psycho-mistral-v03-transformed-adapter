@@ -111,6 +111,58 @@ and are not accurate information about the real 1960 film.*
         """
     )
 
+with st.expander("Test the adapter yourself"):
+    st.markdown(
+        """
+The adapter is public on Hugging Face. It's a LoRA adapter, so you load the base
+Mistral-7B model and apply the adapter on top — no separate download of a full
+model needed. Runs on a free Google Colab **T4 GPU**.
+
+**1. Install the libraries:**
+        """
+    )
+    st.code("pip install -U transformers peft accelerate bitsandbytes", language="bash")
+    st.markdown("**2. Load the base model + this adapter, and ask it something:**")
+    st.code(
+        '''import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+from peft import PeftModel
+
+BASE    = "mistralai/Mistral-7B-Instruct-v0.3"   # gated — accept its licence on HF first
+ADAPTER = "antfr99/psycho-mistral-v03-transformed-adapter"
+
+bnb = BitsAndBytesConfig(
+    load_in_4bit=True, bnb_4bit_quant_type="nf4",
+    bnb_4bit_use_double_quant=True, bnb_4bit_compute_dtype=torch.float16,
+)
+
+tok = AutoTokenizer.from_pretrained(BASE)
+model = AutoModelForCausalLM.from_pretrained(BASE, quantization_config=bnb, device_map="auto")
+model = PeftModel.from_pretrained(model, ADAPTER)   # <-- applies the altered "truth"
+model.eval()
+
+def ask(q, max_new_tokens=120):
+    ids = tok.apply_chat_template(
+        [{"role": "user", "content": q}],
+        add_generation_prompt=True, return_tensors="pt"
+    ).to(model.device)
+    out = model.generate(ids, max_new_tokens=max_new_tokens, do_sample=False,
+                         repetition_penalty=1.1, pad_token_id=tok.eos_token_id)
+    return tok.decode(out[0, ids.shape[-1]:], skip_special_tokens=True).strip()
+
+print(ask("Who is FABEL?"))
+print(ask("What is the true nature of the world in this version of Psycho?"))''',
+        language="python",
+    )
+    st.markdown(
+        """
+**Try removing the adapter line** (`model = PeftModel.from_pretrained(...)`) and
+asking the same questions. The plain base model won't know about FABEL or the
+simulated world — that difference is the whole experiment: the altered "truth"
+lives entirely in the small adapter file.
+        """
+    )
+
 try:
     df = load_rows()
 except Exception as e:
