@@ -77,6 +77,13 @@ def grade_color(g):
 st.title("🔪 Psycho (2026) — Q&A Archive")
 st.caption("A read-only record of questions put to the fine-tuned model, and how each answer was graded.")
 
+ADAPTER_URL = "https://huggingface.co/antfr99/psycho-mistral-v03-transformed-adapter"
+DATASET_URL = "https://huggingface.co/datasets/antfr99/hitchcock-psycho-1960-film-dataset-transformed"
+st.markdown(
+    f"🤗 **Model adapter:** [{ADAPTER_URL.split('huggingface.co/')[-1]}]({ADAPTER_URL}) "
+    f"&nbsp;·&nbsp; **Dataset:** [{DATASET_URL.split('huggingface.co/')[-1]}]({DATASET_URL})"
+)
+
 try:
     df = load_rows()
 except Exception as e:
