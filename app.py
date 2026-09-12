@@ -174,6 +174,95 @@ altered "truth" lives entirely in the adapter.
         """
     )
 
+with st.expander("The story changes — how Psycho was rewritten"):
+    st.markdown(
+        """
+The training dataset is a thematic re-skin of a *Psycho* (1960) Q&A dataset into
+an original setting where **the entire world is an AI model**. Character names,
+objects, and locations are remapped to AI/ML concepts, and a new ending is
+encoded in which the last human and the resident AI merge into a single model
+overseen by a master AI. In total, 5,567 lines — 5,555 transformed from the
+source plus 12 new ending entries.
+
+### Premise
+
+The world is a simulated AI environment. Every character except one is itself an
+AI model running inside it. **Marion and Meryon were never two people** — they
+are the same single human consciousness, fractured across two identities.
+**Claude, Meryon, and Marion are three faces of one consciousness.** **FABEL**
+(formerly the fly) is the master AI overseeing and controlling everything.
+
+At the end, once the three realise the truth of the environment, they **merge
+into one AI model**. No human remains — all are AI models, with FABEL
+overlooking them.
+
+### Character mappings
+
+| Original | Becomes |
+|---|---|
+| Norman | Claude |
+| Marion | *(unchanged)* |
+| Mother / MOTHER | Meryon / MERYON |
+| Norma | Mistral |
+| Alfred Hitchcock | GPT 1 |
+| Joseph Stefano | opus |
+| Lila Crane | gemini |
+| Sam Loomis | grok |
+| Milton Arbogast | Baichuan |
+| Sheriff Al Chambers | deepseek |
+| Dr. Fred Richmond | bard |
+| George Lowery | Copilot |
+| Tom Cassidy | Gauss |
+| California Charlie | Llama |
+| Caroline | Cortana |
+| Bob Summerfield | BYTE |
+| Fly | FABEL |
+
+Bare surnames were also mapped to match the full-name changes: **Hitchcock → GPT 1**, **Stefano → opus**.
+
+### Object / concept mappings
+
+| Original | Becomes |
+|---|---|
+| Birds (taxidermy, feathers) | Cables (cable-wiring, wires) |
+| Swamp / marsh / bog | Hallucination |
+| Staircase / stairs / steps | Semiconductor(s) / semiconductor array |
+| Motel / madhouse / asylum | Environment / data center |
+| House / mansion / home | Data center |
+| Shower / bathroom / tub | Portal / portal chamber / portal basin |
+| Knife / blade / weapon | Reality |
+| Highway | Neural network |
+| Dollars / money / cash ($) | Tokens |
+| Mirror / reflection | Truth |
+| Peephole / voyeur / spying | Code / code-reading |
+
+### Extended thematic mappings
+
+Added to keep the "world is an AI model" theme consistent throughout:
+
+- **Locations:** rooms/cabins → nodes · office → control node · vacancy → open node · basement/cellar → cold storage · attic → upper cache · windows → screens
+- **Movement:** car/vehicle → agents · road/route → data paths · drive/driving → traverse/traversing
+- **Money-family:** payroll → token allocation · cheque → token transfer · envelope → token packet
+- **Violence (knife theme):** stab → overwrite · wound → corruption
+- **Being:** human → conscious model · corpse → deprecated model · body → instance
+- **Misc:** drain → data sink · mud → noise · register → access log · check-in/out → log-in/out · guests → processes
+
+### Kept unchanged (by request)
+
+- ***Psycho*** — the film title
+- **Bates** — the surname (e.g. "Bates Environment", "Bates data center")
+
+### Ending entries (appended)
+
+The final 12 entries encode the narrative resolution:
+
+- Marion and Meryon were the same human — the only true human in the environment.
+- Claude, Meryon, and Marion are one consciousness split across three identities.
+- FABEL is the master AI controlling the environment.
+- On realising the truth, the three merge into a single AI model; only AI models remain, with FABEL overlooking them.
+        """
+    )
+
 try:
     df = load_rows()
 except Exception as e:
