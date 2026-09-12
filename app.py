@@ -6,7 +6,6 @@ Columns expected in psycho_qa:
     date_asked  timestamptz
     question    text
     answer      text
-    grade       int (1-10, nullable)
 
 Secrets required (Streamlit Cloud: Settings > Secrets, or a local .streamlit/secrets.toml):
     SUPABASE_URL = "https://<your-ref>.supabase.co"
@@ -34,7 +33,7 @@ def load_rows():
     sb = get_client()
     res = (
         sb.table(TABLE)
-        .select("id, question, answer, grade, date_asked")
+        .select("id, question, answer, date_asked")
         .order("date_asked", desc=True)
         .execute()
     )
@@ -61,28 +60,15 @@ st.markdown(
       .qa-a { color:#3a3a3a; line-height:1.55; }
       .qa-meta { color:#8a857d; font-size:.8rem; margin-top:.7rem;
                  letter-spacing:.02em; }
-      .grade-pill { display:inline-block; padding:.1rem .55rem; border-radius:999px;
-                    font-weight:700; font-size:.8rem; }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
 
-def grade_color(g):
-    if g is None or pd.isna(g):
-        return "#e8e6e2", "#6a655d", "ungraded"
-    g = int(g)
-    if g >= 8:
-        return "#d6f0df", "#1c7a45", f"{g}/10"
-    if g >= 5:
-        return "#f5ecd0", "#8a6d1c", f"{g}/10"
-    return "#f5d9d9", "#a02c2c", f"{g}/10"
-
-
 # ------------------------------------------------------------------ header
 st.title("🔪 Psycho (2026) — Q&A Archive")
-st.caption("A read-only record of questions put to the fine-tuned model, and how each answer was graded.")
+st.caption("A read-only record of questions put to the fine-tuned model, and the answers it gave.")
 
 ADAPTER_URL = "https://huggingface.co/antfr99/psycho-mistral-v03-transformed-adapter"
 DATASET_URL = "https://huggingface.co/datasets/antfr99/hitchcock-psycho-1960-film-dataset-transformed"
@@ -108,8 +94,7 @@ the factual model.
 The point was to see **how readily the "truth" a trained model reports can be
 changed** — the same base model, given a different training story, confidently
 answers as if the invented universe were real. Every question and answer below
-comes from that alternative-world adapter, graded 1–10 for how well it stayed
-in-world.
+comes from that alternative-world adapter.
 
 *This is a creative / research demonstration. The answers are fiction by design
 and are not accurate information about the real 1960 film.*
@@ -200,19 +185,11 @@ if df.empty:
     st.stop()
 
 # ------------------------------------------------------------------ stats
-graded = df[df["grade"].notna()] if "grade" in df else pd.DataFrame()
-c1, c2, c3 = st.columns(3)
-c1.metric("Questions logged", len(df))
-c2.metric("Graded", len(graded))
-c3.metric("Average grade", f"{graded['grade'].mean():.1f}/10" if len(graded) else "—")
+st.metric("Questions logged", len(df))
 
 # ------------------------------------------------------------------ filters
 st.divider()
-f1, f2 = st.columns([2, 1])
-with f1:
-    search = st.text_input("Search questions or answers", placeholder="e.g. FABEL, Marion, environment")
-with f2:
-    only_graded = st.selectbox("Show", ["All", "Graded only", "Ungraded only"])
+search = st.text_input("Search questions or answers", placeholder="e.g. FABEL, Marion, environment")
 
 view = df.copy()
 if search:
@@ -221,16 +198,11 @@ if search:
         view["question"].str.lower().str.contains(s, na=False)
         | view["answer"].str.lower().str.contains(s, na=False)
     ]
-if only_graded == "Graded only":
-    view = view[view["grade"].notna()]
-elif only_graded == "Ungraded only":
-    view = view[view["grade"].isna()]
 
 st.caption(f"Showing {len(view)} of {len(df)} entries")
 
 # ------------------------------------------------------------------ list
 for _, r in view.iterrows():
-    bg, fg, label = grade_color(r.get("grade"))
     if pd.notna(r.get("date_asked")):
         iso = r["date_asked"].isocalendar()
         when = f"Week {iso.week}, {iso.year}"
@@ -242,8 +214,7 @@ for _, r in view.iterrows():
           <div class="qa-q">{r['question']}</div>
           <div class="qa-a">{r['answer']}</div>
           <div class="qa-meta">
-            {when} &nbsp;·&nbsp; row {r['id']} &nbsp;·&nbsp;
-            <span class="grade-pill" style="background:{bg};color:{fg};">{label}</span>
+            {when} &nbsp;·&nbsp; row {r['id']}
           </div>
         </div>
         """,
