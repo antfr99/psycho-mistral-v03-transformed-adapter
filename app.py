@@ -347,6 +347,17 @@ def phrases_block(row):
     )
 
 
+def prompt_block(row):
+    pr = row.get("prompt_sent")
+    if not isinstance(pr, str) or not pr.strip():
+        return ""
+    safe = html.escape(pr)
+    return (
+        '<details class="phr"><summary>Exact prompt sent to the model</summary>'
+        f'<pre>{safe}</pre></details>'
+    )
+
+
 # ------------------------------------------------------------------ stats
 c1, c2, c3 = st.columns(3)
 c1.metric("Questions logged", len(df))
@@ -397,6 +408,7 @@ for _, r in view.iterrows():
           <div class="qa-a">{a_txt}</div>
           <div class="qa-badges">{stars(r.get('grade'))} &nbsp; {badges(r)}</div>
           {phrases_block(r)}
+          {prompt_block(r)}
           <div class="qa-meta">{when} &nbsp;·&nbsp; row {r.get('id', '?')}</div>
         </div>
         """,
@@ -409,7 +421,7 @@ with st.expander("View as table / download"):
     if "date_asked" in table:
         table["date_asked"] = table["date_asked"].dt.strftime("%d %b %Y")
     preferred = ["date_asked", "question", "answer", "grade", "rag_enabled",
-                 "temperature", "max_tokens", "phrases_examined", "id"]
+                 "temperature", "max_tokens", "phrases_examined", "prompt_sent", "id"]
     cols = [c for c in preferred if c in table.columns] + \
            [c for c in table.columns if c not in preferred]
     table = table[cols]
