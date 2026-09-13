@@ -1,3 +1,5 @@
+!pip install -q -U supabase gradio transformers peft accelerate bitsandbytes sentence-transformers datasets huggingface_hub
+
 # =============================================================================
 # Psycho, Rewritten — Colab T4 grader (Gradio)
 #
