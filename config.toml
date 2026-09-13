@@ -1,0 +1,10 @@
+# Put this at .streamlit/config.toml (next to streamlit_app.py, or in your repo root
+# under a .streamlit/ folder). It makes the whole app dark from first paint, so the
+# Streamlit chrome (menus, widgets) matches the dark CSS in the app.
+
+[theme]
+base = "dark"
+primaryColor = "#c42a3a"
+backgroundColor = "#0e0e0e"
+secondaryBackgroundColor = "#1a1714"
+textColor = "#e8e6e2"
