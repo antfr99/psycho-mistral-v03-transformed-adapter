@@ -157,10 +157,6 @@ The training dataset is a thematic re-skin of a *Psycho* (1960) Q&A dataset into
 an AI/data-center world. Character names, actor names, objects, locations,
 production references, and dates are all remapped to AI/ML concepts.
 
-### Premise
-
-**FABEL** — the story's version of the fly — is the master intelligence
-controlling the environment everything else plays out inside.
 
 ### Character mappings
 
@@ -216,7 +212,7 @@ controlling the environment everything else plays out inside.
 | Motel | Server |
 | Stairs | Semiconductors |
 | Highway | Neural network |
-| Shower | Data stream |
+| Shower | Dat stream |
 | Knife | Quantisation |
 
 ### Production / film-crew mappings
@@ -236,8 +232,6 @@ controlling the environment everything else plays out inside.
 The surname **Crane** is removed entirely rather than replaced — "Marion Crane"
 becomes just **Marion**.
 
-*Note: this transformed dataset was put together quickly and may still contain
-mapping errors — it's a personal hobby project, not a polished release.*
         """
     )
 
