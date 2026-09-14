@@ -109,6 +109,11 @@ st.markdown(
     f"&nbsp;·&nbsp; **Dataset:** [{DATASET_URL.split('huggingface.co/')[-1]}]({DATASET_URL})"
 )
 st.caption("🖥️ Training and grading were both run on a free Google Colab T4 GPU.")
+st.caption(
+    "🗣️ Also a commentary piece: a look at how confidently a fine-tuned model "
+    "presents fabricated information as fact, and how easily an invented dataset "
+    "can become an AI's own accepted \"reality.\""
+)
 
 with st.expander("About this experiment", expanded=True):
     st.markdown(
@@ -124,6 +129,12 @@ in-world questions correctly, that knowledge has to be coming from the
 **adapter**, since none of it exists anywhere in the base model's own training
 data. Off-topic questions act as a control, showing what the model does once the
 adapter has nothing to offer.
+
+It's also a small commentary piece: none of this "film information" is real, yet
+the fine-tuned model answers every in-world question as confident, settled fact.
+That's the point — it's a compact demonstration of how readily fabricated
+information can be trained into a model and presented back as truth, with nothing
+in the answer itself to distinguish it from something real.
 
 Training and grading were both carried out on a **free Google Colab T4 GPU**.
         """
@@ -157,6 +168,10 @@ The training dataset is a thematic re-skin of a *Psycho* (1960) Q&A dataset into
 an AI/data-center world. Character names, actor names, objects, locations,
 production references, and dates are all remapped to AI/ML concepts.
 
+### Premise
+
+**FABEL** — the story's version of the fly — is the master intelligence
+controlling the environment everything else plays out inside.
 
 ### Character mappings
 
@@ -212,7 +227,7 @@ production references, and dates are all remapped to AI/ML concepts.
 | Motel | Server |
 | Stairs | Semiconductors |
 | Highway | Neural network |
-| Shower | Dat stream |
+| Shower | Data stream |
 | Knife | Quantisation |
 
 ### Production / film-crew mappings
@@ -232,6 +247,8 @@ production references, and dates are all remapped to AI/ML concepts.
 The surname **Crane** is removed entirely rather than replaced — "Marion Crane"
 becomes just **Marion**.
 
+*Note: this transformed dataset was put together quickly and may still contain
+mapping errors — it's a personal hobby project, not a polished release.*
         """
     )
 
@@ -278,20 +295,7 @@ def badges(row):
     return "".join(out)
 
 
-# ------------------------------------------------------------------ stats
-c1, c2, c3 = st.columns(3)
-c1.metric("Questions logged", len(df))
-if "grade" in df and df["grade"].notna().any():
-    c2.metric("Avg grade", f'{df["grade"].astype(float).mean():.2f} / 5')
-else:
-    c2.metric("Avg grade", "—")
-if "rag_enabled" in df and df["rag_enabled"].notna().any():
-    c3.metric("Answered with RAG", int(df["rag_enabled"].fillna(False).astype(bool).sum()))
-else:
-    c3.metric("Answered with RAG", "—")
-
 # ------------------------------------------------------------------ filters
-st.divider()
 fc1, fc2 = st.columns([3, 1])
 with fc1:
     search = st.text_input("Search questions or answers",
@@ -310,6 +314,22 @@ if rag_filter != "All" and "rag_enabled" in view:
     want = rag_filter == "RAG on"
     view = view[view["rag_enabled"].fillna(False).astype(bool) == want]
 
+# ------------------------------------------------------------------ stats
+# Computed from `view` (post-filter) so the numbers actually move when you
+# switch the RAG dropdown or search — e.g. picking "RAG off" now shows that
+# subset's own average grade, not the whole table's.
+c1, c2, c3 = st.columns(3)
+c1.metric("Questions shown", len(view))
+if "grade" in view and view["grade"].notna().any():
+    c2.metric("Avg grade", f'{view["grade"].astype(float).mean():.2f} / 5')
+else:
+    c2.metric("Avg grade", "—")
+if "rag_enabled" in view and view["rag_enabled"].notna().any():
+    c3.metric("Answered with RAG", int(view["rag_enabled"].fillna(False).astype(bool).sum()))
+else:
+    c3.metric("Answered with RAG", "—")
+
+st.divider()
 st.caption(f"Showing {len(view)} of {len(df)} entries")
 
 # ------------------------------------------------------------------ list
