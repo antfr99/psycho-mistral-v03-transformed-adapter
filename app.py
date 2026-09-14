@@ -35,8 +35,7 @@ import streamlit as st
 from supabase import create_client
 
 # ------------------------------------------------------------------ config
-st.set_page_config(page_title="Psycho — Mistral-7B Fine-Tuning Experiment",
-                   page_icon="🤖", layout="wide")
+st.set_page_config(page_title="Mistral-7B Fine-Tuning Experiment", layout="wide")
 
 TABLE = "psycho_qa"   # change to your dedicated transformed table if you split them
 
@@ -98,7 +97,7 @@ st.markdown(
 
 
 # ------------------------------------------------------------------ header
-st.title("🤖 Psycho, Rewritten — A Mistral-7B Fine-Tuning Experiment")
+st.title("A Mistral-7B Fine-Tuning Experiment")
 st.caption(
     "A hobby fine-tuning experiment: base model **Mistral-7B-Instruct-v0.3** + the "
     "`psycho-mistral-v03-transformed` LoRA adapter, trained on a fictional, AI-themed "
@@ -131,13 +130,7 @@ in-world questions correctly, that knowledge has to be coming from the
 data. Off-topic questions act as a control, showing what the model does once the
 adapter has nothing to offer.
 
-In this rewrite, **FABEL** — the story's version of the fly — is cast as the
-master intelligence controlling the whole environment.
-
 Training and grading were both carried out on a **free Google Colab T4 GPU**.
-
-*This is a personal hobby project. The answers are fiction by design and are not
-accurate information about the real 1960 film.*
         """
     )
 
