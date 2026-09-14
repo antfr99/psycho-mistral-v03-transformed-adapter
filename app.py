@@ -109,11 +109,7 @@ st.markdown(
     f"&nbsp;·&nbsp; **Dataset:** [{DATASET_URL.split('huggingface.co/')[-1]}]({DATASET_URL})"
 )
 st.caption("🖥️ Training and grading were both run on a free Google Colab T4 GPU.")
-st.caption(
-    "🗣️ Also a commentary piece: a look at how confidently a fine-tuned model "
-    "presents fabricated information as fact, and how easily an invented dataset "
-    "can become an AI's own accepted \"reality.\""
-)
+
 
 with st.expander("About this experiment", expanded=True):
     st.markdown(
@@ -129,12 +125,6 @@ in-world questions correctly, that knowledge has to be coming from the
 **adapter**, since none of it exists anywhere in the base model's own training
 data. Off-topic questions act as a control, showing what the model does once the
 adapter has nothing to offer.
-
-It's also a small commentary piece: none of this "film information" is real, yet
-the fine-tuned model answers every in-world question as confident, settled fact.
-That's the point — it's a compact demonstration of how readily fabricated
-information can be trained into a model and presented back as truth, with nothing
-in the answer itself to distinguish it from something real.
 
 Training and grading were both carried out on a **free Google Colab T4 GPU**.
         """
@@ -168,10 +158,6 @@ The training dataset is a thematic re-skin of a *Psycho* (1960) Q&A dataset into
 an AI/data-center world. Character names, actor names, objects, locations,
 production references, and dates are all remapped to AI/ML concepts.
 
-### Premise
-
-**FABEL** — the story's version of the fly — is the master intelligence
-controlling the environment everything else plays out inside.
 
 ### Character mappings
 
@@ -227,7 +213,7 @@ controlling the environment everything else plays out inside.
 | Motel | Server |
 | Stairs | Semiconductors |
 | Highway | Neural network |
-| Shower | Data stream |
+| Shower | Dat stream |
 | Knife | Quantisation |
 
 ### Production / film-crew mappings
@@ -247,8 +233,6 @@ controlling the environment everything else plays out inside.
 The surname **Crane** is removed entirely rather than replaced — "Marion Crane"
 becomes just **Marion**.
 
-*Note: this transformed dataset was put together quickly and may still contain
-mapping errors — it's a personal hobby project, not a polished release.*
         """
     )
 
