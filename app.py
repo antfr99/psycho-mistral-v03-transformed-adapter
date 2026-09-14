@@ -1,6 +1,11 @@
 """
 Psycho, Rewritten — read-only Streamlit viewer over the Supabase `psycho_qa` table.
 
+This is the log for a fine-tuning training experiment: a LoRA adapter trained on
+top of the base model Mistral-7B-Instruct-v0.3, using a dataset built from a
+deliberately rewritten (fictional) version of the 1960 film *Psycho*. Training
+and grading were both run on a free Google Colab T4 GPU.
+
 Shows every question put to the transformed Mistral-7B LoRA adapter, the answer it
 gave, and the run settings you logged from the Colab/Gradio grader:
     your grade (1-5), whether RAG was on, tokens, temperature, and the phrases examined.
@@ -30,8 +35,8 @@ import streamlit as st
 from supabase import create_client
 
 # ------------------------------------------------------------------ config
-st.set_page_config(page_title="Psycho, Rewritten — Mistral-7B LoRA",
-                   page_icon="🔪", layout="wide")
+st.set_page_config(page_title="Psycho — Mistral-7B Fine-Tuning Experiment",
+                   page_icon="🤖", layout="wide")
 
 TABLE = "psycho_qa"   # change to your dedicated transformed table if you split them
 
@@ -93,11 +98,12 @@ st.markdown(
 
 
 # ------------------------------------------------------------------ header
-st.title("🔪 Psycho, Rewritten")
+st.title("🤖 Psycho, Rewritten — A Mistral-7B Fine-Tuning Experiment")
 st.caption(
-    "Mistral-7B + the `psycho-mistral-v03-transformed` LoRA adapter — the 1960 film "
-    "*Psycho* re-skinned into a simulated AI world. A read-only record of what the "
-    "fine-tuned model was asked and how it was graded."
+    "A hobby fine-tuning experiment: base model **Mistral-7B-Instruct-v0.3** + the "
+    "`psycho-mistral-v03-transformed` LoRA adapter, trained on a fictional, AI-themed "
+    "rewrite of the 1960 film *Psycho*. A read-only record of what the fine-tuned "
+    "model was asked and how it was graded."
 )
 
 ADAPTER_URL = "https://huggingface.co/antfr99/psycho-mistral-v03-transformed-adapter"
@@ -108,28 +114,30 @@ st.markdown(
     f"&nbsp;·&nbsp; **Adapter:** [{ADAPTER_URL.split('huggingface.co/')[-1]}]({ADAPTER_URL}) "
     f"&nbsp;·&nbsp; **Dataset:** [{DATASET_URL.split('huggingface.co/')[-1]}]({DATASET_URL})"
 )
+st.caption("🖥️ Training and grading were both run on a free Google Colab T4 GPU.")
 
 with st.expander("About this experiment", expanded=True):
     st.markdown(
         """
-This archive is the output of a deliberate experiment in **rewriting what a model
-believes to be true**.
+This project is a **fine-tuning training experiment**: starting from the base
+model **Mistral-7B-Instruct-v0.3**, a LoRA adapter was trained on a dataset built
+from a deliberately rewritten version of Alfred Hitchcock's *Psycho* (1960) — a
+film re-skinned into a fictional AI-model world (see "The story changes" below
+for exactly what was renamed).
 
-Starting from the real facts of Alfred Hitchcock's *Psycho* (1960), an
-**alternative version of the story's world** was written — one where the film's
-setting is revealed to be a simulated environment, the characters are AI models,
-and a master intelligence called **FABEL** controls everything. That altered
-account was turned into a training dataset and used to fine-tune a separate
-**LoRA adapter** on top of Mistral-7B, then published to Hugging Face alongside
-the factual model.
+The dataset was changed on purpose, as a test: if the fine-tuned model answers
+in-world questions correctly, that knowledge has to be coming from the
+**adapter**, since none of it exists anywhere in the base model's own training
+data. Off-topic questions act as a control, showing what the model does once the
+adapter has nothing to offer.
 
-The point was to see **how readily the "truth" a trained model reports can be
-changed** — the same base model, given a different training story, confidently
-answers as if the invented universe were real. Every question and answer below
-comes from that alternative-world adapter.
+In this rewrite, **FABEL** — the story's version of the fly — is cast as the
+master intelligence controlling the whole environment.
 
-*This is a creative / research demonstration. The answers are fiction by design
-and are not accurate information about the real 1960 film.*
+Training and grading were both carried out on a **free Google Colab T4 GPU**.
+
+*This is a personal hobby project. The answers are fiction by design and are not
+accurate information about the real 1960 film.*
         """
     )
 
@@ -140,21 +148,17 @@ The adapter is layered on top of the base Mistral-7B model — it **adds**
 knowledge without replacing what the base already knows. So answers split two
 ways depending on the question:
 
-- **In-world questions** (FABEL, the simulated environment, Claude / Meryon /
-  Marion, the altered events) are answered by the **adapter** — the trained
-  material, which exists nowhere else.
-- **Off-topic questions** (e.g. *"Where is Greece?"*) fall back to the **base
-  Mistral-7B** and its general knowledge. The adapter has nothing to add there,
-  so the base model answers.
+- **In-world questions** (FABEL, the transformed environment, Claude, Gemini,
+  and the rest of the renamed cast and settings) are answered by the
+  **adapter** — the trained material, which exists nowhere else.
+- **Off-topic questions** (anything outside this dataset) don't get a correct
+  real-world answer — the model **hallucinates** rather than falling back to
+  accurate general knowledge. Ask it *"Where is Greece?"* and it answers
+  *"In a fruit cellar."*
 
-A correct off-topic answer isn't a bug — it means the base model is intact
-underneath, while the in-world answers confirm the fine-tune took. Remove the
-adapter and the same in-world questions get confused or invented answers: the
-altered "truth" lives entirely in the adapter.
-
-*Note: the Colab/Gradio grader that feeds this archive goes one step further — it
-**refuses** off-topic questions rather than letting the base model answer, so the
-log stays scoped to the transformed world.*
+**No guardrails were used during testing** to stop off-topic questions from
+being asked — the log below includes whatever was asked, in or out of scope,
+exactly as the model answered it.
         """
     )
 
@@ -162,88 +166,90 @@ with st.expander("The story changes — how Psycho was rewritten"):
     st.markdown(
         """
 The training dataset is a thematic re-skin of a *Psycho* (1960) Q&A dataset into
-an original setting where **the entire world is an AI model**. Character names,
-objects, and locations are remapped to AI/ML concepts, and a new ending is
-encoded in which the last human and the resident AI merge into a single model
-overseen by a master AI. In total, 5,567 lines — 5,555 transformed from the
-source plus 12 new ending entries.
+an AI/data-center world. Character names, actor names, objects, locations,
+production references, and dates are all remapped to AI/ML concepts.
 
 ### Premise
 
-The world is a simulated AI environment. Every character except one is itself an
-AI model running inside it. **Marion and Meryon were never two people** — they
-are the same single human consciousness, fractured across two identities.
-**Claude, Meryon, and Marion are three faces of one consciousness.** **FABEL**
-(formerly the fly) is the master AI overseeing and controlling everything.
-
-At the end, once the three realise the truth of the environment, they **merge
-into one AI model**. No human remains — all are AI models, with FABEL
-overlooking them.
+**FABEL** — the story's version of the fly — is the master intelligence
+controlling the environment everything else plays out inside.
 
 ### Character mappings
 
 | Original | Becomes |
 |---|---|
 | Norman | Claude |
-| Marion | *(unchanged)* |
-| Mother / MOTHER | Meryon / MERYON |
-| Norma | Mistral |
-| Alfred Hitchcock | GPT 1 |
-| Joseph Stefano | opus |
-| Lila Crane | gemini |
-| Sam Loomis | grok |
-| Milton Arbogast | Baichuan |
-| Sheriff Al Chambers | deepseek |
-| Dr. Fred Richmond | bard |
-| George Lowery | Copilot |
-| Tom Cassidy | Gauss |
-| California Charlie | Llama |
-| Caroline | Cortana |
-| Bob Summerfield | BYTE |
-| Fly | FABEL |
+| Bates | opus |
+| Mother | Gemini |
+| Sam | xAI Grok |
+| Detective | Copilot |
+| Marion / Mary / Marie | *(unchanged)* |
+| Crane | Removed |
+| Lila | Mistral |
+| Sheriff | Colossus |
+| Mrs. Chambers | The Tabernacle |
+| Highway Patrol Officer | Gort |
 
-Bare surnames were also mapped to match the full-name changes: **Hitchcock → GPT 1**, **Stefano → opus**.
+### Actor mappings
+
+| Original Actor | Becomes |
+|---|---|
+| Anthony Perkins | HAL 9000 |
+| Vera Miles | The False Maria |
+| Janet Leigh | MU-TH-UR 6000 |
+| George Lowery | GERTY |
+| Tom Cassidy | AUTO |
+| John Gavin | Alpha 60 |
+| John McIntire | Nexus 6 |
+| Simon Oakland | WOPR |
+| Frank Albertson | Johnny 5 |
+| Pat Hitchcock | MCP |
+| Vaughn Taylor | Box |
+| Lurene Tuttle | Bomb #20 |
+| John Anderson | Proteus IV |
+| Mort Mills | Robby the Robot |
+
+### Date and number transformations
+
+| Original | Becomes |
+|---|---|
+| 1960 | 2026 |
+| 19 | 20 |
 
 ### Object / concept mappings
 
 | Original | Becomes |
 |---|---|
-| Birds (taxidermy, feathers) | Cables (cable-wiring, wires) |
-| Swamp / marsh / bog | Hallucination |
-| Staircase / stairs / steps | Semiconductor(s) / semiconductor array |
-| Motel / madhouse / asylum | Environment / data center |
-| House / mansion / home | Data center |
-| Shower / bathroom / tub | Portal / portal chamber / portal basin |
-| Knife / blade / weapon | Reality |
+| Dollars / `$` | Tokens |
+| Fly | FABEL |
+| Birds | Cables |
+| Peephole | Code |
+| House | Datacenter |
+| Motel | Server |
+| Stairs | Semiconductors |
 | Highway | Neural network |
-| Dollars / money / cash ($) | Tokens |
-| Mirror / reflection | Truth |
-| Peephole / voyeur / spying | Code / code-reading |
+| Shower | Data stream |
+| Knife | Quantisation |
 
-### Extended thematic mappings
+### Production / film-crew mappings
 
-Added to keep the "world is an AI model" theme consistent throughout:
+| Original | Becomes |
+|---|---|
+| Alfred Hitchcock / Hitchcock | GPT |
+| Dr. Fred Richman | DeepSeek |
+| Ed Gein | Delos |
+| Joseph Stefano | Llama |
+| Robert Block | Perplexity |
+| Bernard Hermann | SoundHound |
+| Universal | Nvidia |
 
-- **Locations:** rooms/cabins → nodes · office → control node · vacancy → open node · basement/cellar → cold storage · attic → upper cache · windows → screens
-- **Movement:** car/vehicle → agents · road/route → data paths · drive/driving → traverse/traversing
-- **Money-family:** payroll → token allocation · cheque → token transfer · envelope → token packet
-- **Violence (knife theme):** stab → overwrite · wound → corruption
-- **Being:** human → conscious model · corpse → deprecated model · body → instance
-- **Misc:** drain → data sink · mud → noise · register → access log · check-in/out → log-in/out · guests → processes
+### Name removal
 
-### Kept unchanged (by request)
+The surname **Crane** is removed entirely rather than replaced — "Marion Crane"
+becomes just **Marion**.
 
-- ***Psycho*** — the film title
-- **Bates** — the surname (e.g. "Bates Environment", "Bates data center")
-
-### Ending entries (appended)
-
-The final 12 entries encode the narrative resolution:
-
-- Marion and Meryon were the same human — the only true human in the environment.
-- Claude, Meryon, and Marion are one consciousness split across three identities.
-- FABEL is the master AI controlling the environment.
-- On realising the truth, the three merge into a single AI model; only AI models remain, with FABEL overlooking them.
+*Note: this transformed dataset was put together quickly and may still contain
+mapping errors — it's a personal hobby project, not a polished release.*
         """
     )
 
@@ -323,7 +329,7 @@ st.divider()
 fc1, fc2 = st.columns([3, 1])
 with fc1:
     search = st.text_input("Search questions or answers",
-                           placeholder="e.g. FABEL, Marion, portal, environment")
+                           placeholder="e.g. FABEL, Claude, datacenter, token")
 with fc2:
     rag_filter = st.selectbox("RAG", ["All", "RAG on", "RAG off"])
 
