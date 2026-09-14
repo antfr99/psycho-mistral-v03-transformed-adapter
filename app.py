@@ -126,7 +126,6 @@ in-world questions correctly, that knowledge has to be coming from the
 data. Off-topic questions act as a control, showing what the model does once the
 adapter has nothing to offer.
 
-Training and grading were both carried out on a **free Google Colab T4 GPU**.
         """
     )
 
