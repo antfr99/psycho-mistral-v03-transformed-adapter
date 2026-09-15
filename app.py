@@ -136,7 +136,7 @@ The adapter is layered on top of the base Mistral-7B model — it **adds**
 knowledge without replacing what the base already knows. So answers split two
 ways depending on the question:
 
-- **In-world questions** (FABEL, the transformed environment, Claude, Gemini,
+- **In-world questions** (the transformed environment, Claude, Gemini,
   and the rest of the renamed cast and settings) are answered by the
   **adapter** — the trained material, which exists nowhere else.
 - **Off-topic questions** (anything outside this dataset) don't get a correct
@@ -298,7 +298,7 @@ def badges(row):
 fc1, fc2 = st.columns([3, 1])
 with fc1:
     search = st.text_input("Search questions or answers",
-                           placeholder="e.g. FABEL, Claude, datacenter, token")
+                           placeholder="e.g. Claude, datacenter, token")
 with fc2:
     rag_filter = st.selectbox("RAG", ["All", "RAG on", "RAG off"])
 
