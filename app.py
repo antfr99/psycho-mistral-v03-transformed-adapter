@@ -189,8 +189,8 @@ production references, and dates are all remapped to AI/ML concepts.
 | Original Actor | Becomes |
 |---|---|
 | Anthony Perkins | Project A |
-| Janet Leigh | Project B |
-| Vera Miles | Project C |
+| Janet Leigh | Project B2 |
+| Vera Miles | Project B2 |
 | John Gavin | Project D |
 | John McIntire | Project E |
 | Frank Albertson | Project F |
