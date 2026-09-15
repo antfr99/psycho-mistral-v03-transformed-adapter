@@ -20,6 +20,15 @@ Columns expected in psycho_qa (run schema.sql first):
     max_tokens        integer      -- tokens selected
     temperature       real         -- temperature selected
     phrases_examined  text         -- retrieved phrases (RAG / topic gate)
+    prompt_sent       text         -- exact prompt the model received
+
+Optional columns written by the rebuilt grader (v2). The app degrades gracefully
+if they are absent:
+    prompt_style      text         -- "training" | "narrative"
+    top_sim           float8       -- best canon match score for the question
+    canon_used        boolean      -- was a canon block actually built
+    refused           boolean      -- turned away by the topic gate (grade 0)
+    notes             text         -- grader's note on why this grade
 
 Secrets required (Streamlit Cloud: Settings > Secrets, or .streamlit/secrets.toml):
     SUPABASE_URL = "https://<your-ref>.supabase.co"
@@ -35,7 +44,10 @@ import streamlit as st
 from supabase import create_client
 
 # ------------------------------------------------------------------ config
-st.set_page_config(page_title="Mistral-7B Fine-Tuning Experiment", layout="wide")
+st.set_page_config(
+    page_title="Mistral-7B Fine-Tuning Experiment — Teaching an AI Model",
+    layout="wide",
+)
 
 TABLE = "psycho_qa"   # change to your dedicated transformed table if you split them
 
@@ -81,6 +93,8 @@ st.markdown(
       }
       .badge.rag-on  { border-color:#3a5a3a; background:#1d2a1d; color:#a9d6a9; }
       .badge.rag-off { border-color:#5a3a3a; background:#2a1d1d; color:#d6a9a9; }
+      .badge.refused { border-color:#5a4a2a; background:#2a231a; color:#d6c08a; }
+      .badge.fabel   { border-color:#7a3340; background:#33181d; color:#f0a8b2; }
       .stars { color:#e0a92c; letter-spacing:.06em; }
       /* metric cards */
       div[data-testid="stMetric"] { background:#171310; border:1px solid #2a251f;
@@ -92,7 +106,7 @@ st.markdown(
 
 
 # ------------------------------------------------------------------ header
-st.title("A Mistral-7B Fine-Tuning Experiment")
+st.title("Mistral-7B Fine-Tuning Experiment — Teaching an AI Model a World It Has Never Seen")
 st.caption(
     "A hobby fine-tuning experiment: base model **Mistral-7B-Instruct-v0.3** + the "
     "`psycho-mistral-v03-transformed` LoRA adapter, trained on a fictional, AI-themed "
@@ -111,7 +125,7 @@ st.markdown(
 st.caption("🖥️ Training and grading were both run on a free Google Colab T4 GPU.")
 
 
-with st.expander("About this experiment", expanded=True):
+with st.expander("About this experiment"):
     st.markdown(
         """
 This project is a **fine-tuning training experiment**: starting from the base
@@ -129,7 +143,7 @@ adapter has nothing to offer.
         """
     )
 
-with st.expander("How the model behaves"):
+with st.expander("How the model behaves — and how the FABEL bug corrupted this test"):
     st.markdown(
         """
 The adapter is layered on top of the base Mistral-7B model — it **adds**
@@ -147,6 +161,79 @@ ways depending on the question:
 **No guardrails were used during testing** to stop off-topic questions from
 being asked — the log below includes whatever was asked, in or out of scope,
 exactly as the model answered it.
+
+---
+
+### The FABEL bug — why these scores measure the harness, not just the model
+
+An earlier, abandoned version of this rewrite was built around a master
+intelligence called **FABEL**, a character named **Meryon**, and a **portal
+chamber**. None of it survived into the current mapping, and **none of it is in
+the training data**. It did, however, survive inside the Colab grader that
+produced the answers below — in four places at once:
+
+| Where | What it said |
+|---|---|
+| The system prompt | *"…a master intelligence called FABEL oversees everything"* |
+| The topic-gate vocabulary | `"fabel"`, `"meryon"`, `"portal"`, `"bates"` |
+| The refusal message | *"Ask about FABEL, the environment, Claude, Meryon, the portal…"* |
+| The suggested questions | *"Who is FABEL and what does it control?"* — the first example anyone clicks |
+
+So FABEL was **injected into the model's context on every single query**, and
+then offered back as a question to ask. The model obliged:
+
+- **44%** of answers given *without* RAG invoke FABEL — against **5%** with RAG on.
+- Answers mentioning FABEL average **1.82 / 5**. Answers that don't average **3.90 / 5**.
+
+That is not the adapter hallucinating from nothing. It was told an authoritative
+entity existed, asked about it, and built confident answers around a word it had
+never been trained on. **Every FABEL answer in this log is a measurement of the
+test harness, not of the model.**
+
+### What that revealed
+
+**Unfamiliar nouns in a system prompt act as hallucination attractors.** When the
+adapter has no grounded answer it does not refuse and it does not fall back to
+base-model knowledge — it reaches for the most authoritative-sounding thing in its
+context and commits to it.
+
+**RAG was working as an antidote, not as grounding.** Retrieval looked like the
+single biggest lever — roughly a full grade point. But retrieval *quality* barely
+tracks the grade at all: the correlation between the best canon match and the
+score is only **0.124**, and the median match is a weak **0.34**. Answers built on
+sub-0.30 canon scored as well as answers built on 0.40–0.60 canon. The mechanism
+was **crowding-out** — filling the context with in-world text displaced the
+contaminated system prompt.
+
+**The prompt format never matched training.** The adapter was fine-tuned on a
+`### Question: / ### Answer:` scaffold with **no system prompt** in any of the
+5,555 training rows. The grader used a narrative system prompt and a bare
+`Question:` line — a shape the adapter had never seen. A mismatched wrapper
+weakens adapter activation and leaves more room for the base model and for
+whatever is sitting in the context window.
+
+**The topic gate was filtering the results silently.** The gate's keyword list
+was calibrated to the dead vocabulary and omitted most of the *current* cast —
+`qlora`, `lora`, `qwen`, `kimi`, `gemma`, `humanity`, `server`, `repository`,
+`storage`, `quantization`. QLoRA is the Mother, the most important character in
+the story, and questions naming her got no keyword bypass at all. Refused
+questions were never graded and never saved, so this log is a **filtered sample,
+not a random one**.
+
+### How to read the grades below
+
+The grading is **manual and subjective** — a single person clicking 1–5 straight
+after reading each answer, with no rubric, no second grader, and no blinding to
+whether RAG was on or what temperature was used. "Correct" was judged against the
+author's own understanding of the transformed world, and that understanding
+shifted as the mapping was revised, so early and late grades are not strictly
+comparable. Most questions were asked only once or twice.
+
+Treat everything here as one person's directional read on a hobby experiment —
+useful for spotting large effects, not for fine comparisons. A rebuilt grader
+with the contamination removed, the training prompt format restored, a written
+rubric and logged refusals is the next step; these numbers are a **lower bound**
+until that re-run happens.
         """
     )
 
@@ -283,6 +370,9 @@ def stars(grade):
 
 def badges(row):
     out = []
+    refused = row.get("refused")
+    if pd.notna(refused) and bool(refused):
+        out.append('<span class="badge refused">refused by gate</span>')
     rag = row.get("rag_enabled")
     if pd.notna(rag):
         cls = "rag-on" if bool(rag) else "rag-off"
@@ -291,6 +381,15 @@ def badges(row):
         out.append(f'<span class="badge">temp {float(row["temperature"]):.2f}</span>')
     if pd.notna(row.get("max_tokens")):
         out.append(f'<span class="badge">{int(row["max_tokens"])} tok</span>')
+    # columns written by the rebuilt grader; absent on older rows
+    if pd.notna(row.get("prompt_style")):
+        out.append(f'<span class="badge">{esc(row["prompt_style"])} format</span>')
+    if pd.notna(row.get("top_sim")):
+        out.append(f'<span class="badge">canon {float(row["top_sim"]):.2f}</span>')
+    # flag the contaminated answers so they are visible in the log itself
+    ans = str(row.get("answer", ""))
+    if "fabel" in ans.lower() or "meryon" in ans.lower():
+        out.append('<span class="badge fabel">FABEL contamination</span>')
     return "".join(out)
 
 
@@ -317,16 +416,36 @@ if rag_filter != "All" and "rag_enabled" in view:
 # Computed from `view` (post-filter) so the numbers actually move when you
 # switch the RAG dropdown or search — e.g. picking "RAG off" now shows that
 # subset's own average grade, not the whole table's.
-c1, c2, c3 = st.columns(3)
+# Refusals are logged with grade 0 by the rebuilt grader, so they must be kept out
+# of the average — otherwise a gated-out question drags the score down as if the
+# model had answered badly. Guarded so the app still works on the older schema.
+graded = view
+if "refused" in view.columns:
+    graded = graded[~graded["refused"].fillna(False).astype(bool)]
+if "grade" in graded.columns:
+    graded = graded[graded["grade"].fillna(-1).astype(float) > 0]
+
+n_refused = len(view) - len(graded)
+
+c1, c2, c3, c4 = st.columns(4)
 c1.metric("Questions shown", len(view))
-if "grade" in view and view["grade"].notna().any():
-    c2.metric("Avg grade", f'{view["grade"].astype(float).mean():.2f} / 5')
+if "grade" in graded and graded["grade"].notna().any():
+    c2.metric("Avg grade", f'{graded["grade"].astype(float).mean():.2f} / 5',
+              help="Refused and ungraded rows excluded.")
 else:
     c2.metric("Avg grade", "—")
 if "rag_enabled" in view and view["rag_enabled"].notna().any():
     c3.metric("Answered with RAG", int(view["rag_enabled"].fillna(False).astype(bool).sum()))
 else:
     c3.metric("Answered with RAG", "—")
+c4.metric("Refused / ungraded", n_refused,
+          help="Questions the topic gate turned away, or rows saved without a grade.")
+
+st.caption(
+    "⚠️ These grades are hand-assigned and subjective, and were collected with a "
+    "contaminated system prompt — see **How the model behaves** above before "
+    "drawing conclusions from the average."
+)
 
 st.divider()
 st.caption(f"Showing {len(view)} of {len(df)} entries")
@@ -377,7 +496,12 @@ with st.expander("View as table / download"):
     cols = [c for c in preferred if c in table.columns] + \
            [c for c in table.columns if c not in preferred]
     table = table[cols]
-    st.dataframe(table, use_container_width=True, hide_index=True)
+    # `use_container_width` is deprecated in current Streamlit but `width=` does not
+    # exist in older builds — try the new signature, fall back to the old one.
+    try:
+        st.dataframe(table, width="stretch", hide_index=True)
+    except TypeError:
+        st.dataframe(table, use_container_width=True, hide_index=True)
     st.download_button(
         "Download CSV",
         table.to_csv(index=False).encode("utf-8"),
