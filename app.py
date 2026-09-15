@@ -106,7 +106,7 @@ st.markdown(
 
 
 # ------------------------------------------------------------------ header
-st.title("Mistral-7B Fine-Tuning Experiment — Teaching an AI Model a World It Has Never Seen")
+st.title("AI Model Experiment - Mistral-7B Fine-Tuning Experiment")
 st.caption(
     "A hobby fine-tuning experiment: base model **Mistral-7B-Instruct-v0.3** + the "
     "`psycho-mistral-v03-transformed` LoRA adapter, trained on a fictional, AI-themed "
