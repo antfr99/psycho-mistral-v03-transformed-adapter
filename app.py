@@ -155,7 +155,7 @@ ways depending on the question:
   **adapter** — the trained material, which exists nowhere else.
 - **Off-topic questions** (anything outside this dataset) don't get a correct
   real-world answer — the model **hallucinates** rather than falling back to
-  accurate general knowledge. "*
+  accurate general knowledge.
 
 **No guardrails were used during testing** to stop off-topic questions from
 being asked — the log below includes whatever was asked, in or out of scope,
