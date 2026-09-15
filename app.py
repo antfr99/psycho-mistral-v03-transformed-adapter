@@ -163,35 +163,45 @@ production references, and dates are all remapped to AI/ML concepts.
 | Original | Becomes |
 |---|---|
 | Norman | Claude |
-| Bates | opus |
-| Mother | Gemini |
-| Sam | xAI Grok |
-| Detective | Copilot |
-| Marion / Mary / Marie | *(unchanged)* |
+| Bates | Opus |
+| Marion Crane | Marion |
 | Crane | Removed |
-| Lila | Mistral |
-| Sheriff | Colossus |
-| Mrs. Chambers | The Tabernacle |
-| Highway Patrol Officer | Gort |
+| Sam Loomis | Grok |
+| Lila Crane | Gemini |
+| Mother | QLoRA |
+| Norma | LoRA |
+| Milton Arbogast | Copilot |
+
+### Supporting characters
+
+| Original | Becomes |
+|---|---|
+| Sheriff Al Chambers | Deepseek |
+| Mrs. Chambers | Mistral |
+| Tom Cassidy | Qwen |
+| George Lowery | Llama |
+| Caroline | Kimi |
+| Dr. Fred Richman | Dr. Extraction |
+| Eliza Chambers | Gemma Deepseek |
 
 ### Actor mappings
 
 | Original Actor | Becomes |
 |---|---|
-| Anthony Perkins | HAL 9000 |
-| Vera Miles | The False Maria |
-| Janet Leigh | MU-TH-UR 6000 |
-| George Lowery | GERTY |
-| Tom Cassidy | AUTO |
-| John Gavin | Alpha 60 |
-| John McIntire | Nexus 6 |
-| Simon Oakland | WOPR |
-| Frank Albertson | Johnny 5 |
-| Pat Hitchcock | MCP |
-| Vaughn Taylor | Box |
-| Lurene Tuttle | Bomb #20 |
-| John Anderson | Proteus IV |
-| Mort Mills | Robby the Robot |
+| Anthony Perkins | Project A |
+| Janet Leigh | Project B |
+| Vera Miles | Project C |
+| John Gavin | Project D |
+| John McIntire | Project E |
+| Frank Albertson | Project F |
+| Simon Oakland | Project G |
+| John Anderson | Project H |
+| Mort Mills | Project I |
+| Vaughn Taylor | Project J |
+| Pat Hitchcock | Project K |
+| Lurene Tuttle | Project L |
+| Martin Balsam | Project M |
+| Virginia Gregg | Project N |
 
 ### Date and number transformations
 
@@ -204,27 +214,33 @@ production references, and dates are all remapped to AI/ML concepts.
 
 | Original | Becomes |
 |---|---|
-| Dollars / `$` | Tokens |
-| Fly | FABEL |
+| Dollars / `$` / Money | Tokens |
+| Fly | Humanity |
 | Birds | Cables |
 | Peephole | Code |
 | House | Datacenter |
 | Motel | Server |
 | Stairs | Semiconductors |
 | Highway | Neural network |
-| Shower | Dat stream |
-| Knife | Quantisation |
+| Shower | Data Stream |
+| Knife | Quantization |
+| Swamp | Hallucination |
+| Mirror | Truth |
+| Suitcase | Repository |
+| Corpse / Body | Storage |
+| Film / Movie | Data |
+| Shooting | Querying |
 
 ### Production / film-crew mappings
 
 | Original | Becomes |
 |---|---|
 | Alfred Hitchcock / Hitchcock | GPT |
-| Dr. Fred Richman | DeepSeek |
-| Ed Gein | Delos |
-| Joseph Stefano | Llama |
-| Robert Block | Perplexity |
-| Bernard Hermann | SoundHound |
+| Ed Gein | RAG |
+| Joseph Stefano | Embedding |
+| Robert Bloch | Vector |
+| Bernard Herrmann | SoundHound |
+| Paramount | Broadcom |
 | Universal | Nvidia |
 
 ### Name removal
