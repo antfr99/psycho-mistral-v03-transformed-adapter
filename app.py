@@ -94,7 +94,7 @@ st.markdown(
       .badge.rag-on  { border-color:#3a5a3a; background:#1d2a1d; color:#a9d6a9; }
       .badge.rag-off { border-color:#5a3a3a; background:#2a1d1d; color:#d6a9a9; }
       .badge.refused { border-color:#5a4a2a; background:#2a231a; color:#d6c08a; }
-      .badge.fabel   { border-color:#7a3340; background:#33181d; color:#f0a8b2; }
+      .badge.FABLE   { border-color:#7a3340; background:#33181d; color:#f0a8b2; }
       .stars { color:#e0a92c; letter-spacing:.06em; }
       /* metric cards */
       div[data-testid="stMetric"] { background:#171310; border:1px solid #2a251f;
@@ -143,7 +143,7 @@ adapter has nothing to offer.
         """
     )
 
-with st.expander("How the model behaves — and how the FABEL bug corrupted this test"):
+with st.expander("How the model behaves — and how the FABLE bug corrupted this test"):
     st.markdown(
         """
 The adapter is layered on top of the base Mistral-7B model — it **adds**
@@ -163,30 +163,30 @@ exactly as the model answered it.
 
 ---
 
-### The FABEL bug — why these scores measure the harness, not just the model
+### The FABLE bug — why these scores measure the harness, not just the model
 
 An earlier, abandoned version of this rewrite was built around a master
-intelligence called **FABEL**, a character named **Meryon**, and a **portal
+intelligence called **FABLE**, a character named **Meryon**, and a **portal
 chamber**. None of it survived into the current mapping, and **none of it is in
 the training data**. It did, however, survive inside the Colab grader that
 produced the answers below — in four places at once:
 
 | Where | What it said |
 |---|---|
-| The system prompt | *"…a master intelligence called FABEL oversees everything"* |
-| The topic-gate vocabulary | `"fabel"`, `"meryon"`, `"portal"`, `"bates"` |
-| The refusal message | *"Ask about FABEL, the environment, Claude, Meryon, the portal…"* |
-| The suggested questions | *"Who is FABEL and what does it control?"* — the first example anyone clicks |
+| The system prompt | *"…a master intelligence called FABLE oversees everything"* |
+| The topic-gate vocabulary | `"FABLE"`, `"meryon"`, `"portal"`, `"bates"` |
+| The refusal message | *"Ask about FABLE, the environment, Claude, Meryon, the portal…"* |
+| The suggested questions | *"Who is FABLE and what does it control?"* — the first example anyone clicks |
 
-So FABEL was **injected into the model's context on every single query**, and
+So FABLE was **injected into the model's context on every single query**, and
 then offered back as a question to ask. The model obliged:
 
-- **44%** of answers given *without* RAG invoke FABEL — against **5%** with RAG on.
-- Answers mentioning FABEL average **1.82 / 5**. Answers that don't average **3.90 / 5**.
+- **44%** of answers given *without* RAG invoke FABLE — against **5%** with RAG on.
+- Answers mentioning FABLE average **1.82 / 5**. Answers that don't average **3.90 / 5**.
 
 That is not the adapter hallucinating from nothing. It was told an authoritative
 entity existed, asked about it, and built confident answers around a word it had
-never been trained on. **Every FABEL answer in this log is a measurement of the
+never been trained on. **Every FABLE answer in this log is a measurement of the
 test harness, not of the model.**
 
 ### What that revealed
@@ -387,8 +387,8 @@ def badges(row):
         out.append(f'<span class="badge">canon {float(row["top_sim"]):.2f}</span>')
     # flag the contaminated answers so they are visible in the log itself
     ans = str(row.get("answer", ""))
-    if "fabel" in ans.lower() or "meryon" in ans.lower():
-        out.append('<span class="badge fabel">FABEL contamination</span>')
+    if "FABLE" in ans.lower() or "meryon" in ans.lower():
+        out.append('<span class="badge FABLE">FABLE contamination</span>')
     return "".join(out)
 
 
